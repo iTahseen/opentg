@@ -1,6 +1,6 @@
 import base64
 from io import BytesIO
-import requests
+import aiohttp
 from pyrogram import Client, filters, errors, types
 from pyrogram.types import Message
 from utils.misc import modules_help, prefix
@@ -27,13 +27,18 @@ async def quote_cmd(client: Client, message: Message):
         "text_color": "#fff",
     }
 
-    response = requests.post(url, json=params)
-    if not response.ok:
-        return await message.edit(
-            f"<b>Quotes API error!</b>\n" f"<code>{response.text}</code>"
-        )
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=params) as resp:
 
-    resized = resize_image(BytesIO(response.content), img_type="WEBP")
+            if resp.status != 200:
+                error_text = await resp.text()
+                return await message.edit(
+                    f"<b>Quotes API error!</b>\n<code>{error_text}</code>"
+                )
+
+            content = await resp.read()
+
+    resized = resize_image(BytesIO(content), img_type="WEBP")
 
     await message.edit("<b>Sending...</b>")
 
@@ -48,8 +53,10 @@ async def quote_cmd(client: Client, message: Message):
 @Client.on_message(filters.command(["fq", "fakequote"], prefix))
 @with_reply
 async def fake_quote_cmd(client: Client, message: types.Message):
+
     fake_quote_text = " ".join(
-        arg for arg in message.command[1:] if arg not in ["!png", "!file", "!me", "!ls", "!noreply", "!nr"]
+        arg for arg in message.command[1:]
+        if arg not in ["!png", "!file", "!me", "!ls", "!noreply", "!nr"]
     )
 
     if not fake_quote_text:
@@ -71,13 +78,18 @@ async def fake_quote_cmd(client: Client, message: types.Message):
         "text_color": "#fff",
     }
 
-    response = requests.post(url, json=params)
-    if not response.ok:
-        return await message.edit(
-            f"<b>Quotes API error!</b>\n<code>{response.text}</code>"
-        )
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=params) as resp:
 
-    resized = resize_image(BytesIO(response.content), img_type="WEBP")
+            if resp.status != 200:
+                error_text = await resp.text()
+                return await message.edit(
+                    f"<b>Quotes API error!</b>\n<code>{error_text}</code>"
+                )
+
+            content = await resp.read()
+
+    resized = resize_image(BytesIO(content), img_type="WEBP")
 
     await message.edit("<b>Sending...</b>")
 
@@ -93,6 +105,7 @@ files_cache = {}
 
 
 async def render_message(app: Client, message: types.Message) -> dict:
+
     async def get_file(file_id) -> str:
         if file_id in files_cache:
             return files_cache[file_id]
@@ -127,36 +140,47 @@ async def render_message(app: Client, message: types.Message) -> dict:
             )
 
     author = {}
+
     if message.from_user and message.from_user.id != 0:
         from_user = message.from_user
 
         author["id"] = from_user.id
         author["name"] = from_user.first_name
+
         if from_user.last_name:
             author["name"] += " " + from_user.last_name
+
         author["rank"] = ""
+
         if from_user.photo:
             author["avatar"] = await get_file(from_user.photo.big_file_id)
         else:
             author["avatar"] = ""
+
     else:
         author["id"] = message.sender_chat.id
         author["name"] = message.sender_chat.title
         author["rank"] = "channel" if message.sender_chat.type == "channel" else ""
+
         if message.sender_chat.photo:
             author["avatar"] = await get_file(message.sender_chat.photo.big_file_id)
         else:
             author["avatar"] = ""
+
     author["via_bot"] = message.via_bot.username if message.via_bot else ""
 
     reply = {}
     reply_msg = message.reply_to_message
+
     if reply_msg and not reply_msg.empty:
+
         if reply_msg.from_user:
             reply["id"] = reply_msg.from_user.id
             reply["name"] = reply_msg.from_user.first_name
+
             if reply_msg.from_user.last_name:
                 reply["name"] += " " + reply_msg.from_user.last_name
+
         else:
             reply["id"] = reply_msg.sender_chat.id
             reply["name"] = reply_msg.sender_chat.title
