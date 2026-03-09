@@ -8,7 +8,7 @@ from pyrogram.types import Message
 from utils.scripts import import_library
 from utils.config import gemini_key
 from utils.db import db
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from modules.custom_modules.elevenlabs import generate_elevenlabs_audio
 from PIL import Image
 import datetime
