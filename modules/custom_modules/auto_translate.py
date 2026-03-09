@@ -3,7 +3,7 @@ from urllib.parse import quote
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.filters import create
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.db import db
 
 TRANSLATE_API = "https://api.delirius.store/tools/translate?text={query}&language={lang}"
