@@ -4,7 +4,7 @@ import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import Message, InputMediaPhoto, InputMediaVideo
 from pyrogram.enums import MessagesFilter
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.db import db
 
 NS = "custom.dm"
