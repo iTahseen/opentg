@@ -2,8 +2,7 @@ import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import os
-
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 OCR_SPACE_API_KEY = "K83738930788957"
 OCR_SPACE_URL = "https://api.ocr.space/parse/image"
