@@ -1,7 +1,7 @@
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 import os
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 @Client.on_message(filters.command("exfriends", prefix) & filters.me)
 async def fetch_info(client: Client, message: Message):
