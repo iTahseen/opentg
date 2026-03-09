@@ -1,29 +1,20 @@
-# Copyright (C) 2020-2021 by DevsExpo@Github, < https://github.com/DevsExpo >.
-#
-# This file is part of < https://github.com/DevsExpo/FridayUserBot > project,
-# and is released under the "GNU v3.0 License Agreement".
-# Please see < https://github.com/DevsExpo/blob/master/LICENSE >
-#
-# All rights reserved.
-# Modifed by @moonuserbot
-
 import io
 import os
 from datetime import datetime
 from functools import wraps
 from io import BytesIO
 
-import aiohttp
+import requests
 from PIL import Image
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from utils import modules_help, prefix
 from utils.config import rmbg_key
+from utils.misc import modules_help, prefix
 from utils.scripts import edit_or_reply, format_exc
 
 
-async def convert_to_image(message, client) -> None | str:
+async def convert_to_image(message, client) -> [None, str]:
     """Convert Most Media Formats To Raw Image"""
     if not message:
         return None
@@ -37,7 +28,6 @@ async def convert_to_image(message, client) -> None | str:
         or message.reply_to_message.media
         or message.reply_to_message.animation
         or message.reply_to_message.audio
-        or message.reply_to_message.document
     ):
         return None
     if message.reply_to_message.photo:
@@ -54,47 +44,28 @@ async def convert_to_image(message, client) -> None | str:
             cmd = (
                 f"lottie_convert.py --frame 0 -if lottie -of png {path_s} {final_path}"
             )
-            await exec(cmd)  # skipcq
+            await exec(cmd)
     elif message.reply_to_message.audio:
         thumb = message.reply_to_message.audio.thumbs[0].file_id
         final_path = await client.download_media(thumb)
     elif message.reply_to_message.video or message.reply_to_message.animation:
         final_path = "fetched_thumb.png"
         vid_path = await client.download_media(message.reply_to_message)
-        await exec(
-            f"ffmpeg -i {vid_path} -filter:v scale=500:500 -an {final_path}"
-        )  # skipcq
-    elif message.reply_to_message.document:
-        if message.reply_to_message.document.mime_type == "image/jpeg":
-            final_path = await message.reply_to_message.download()
-        elif message.reply_to_message.document.mime_type == "image/png":
-            final_path = await message.reply_to_message.download()
-        elif message.reply_to_message.document.mime_type == "image/webp":
-            final_path = "webp_to_png_s_proton.png"
-            path_s = await message.reply_to_message.download()
-            im = Image.open(path_s)
-            im.save(final_path, "PNG")
-        else:
-            return None
+        await exec(f"ffmpeg -i {vid_path} -filter:v scale=500:500 -an {final_path}")
     return final_path
 
 
-async def remove_background(photo_data):
-    with open(photo_data, "rb") as image_file:
-        image_data = image_file.read()
-    form = aiohttp.FormData()
-    form.add_field("image_file", image_data)
-    form.add_field("size", "auto")
-    async with aiohttp.ClientSession() as session, session.post(
+def remove_background(photo_data):
+    response = requests.post(
         "https://api.remove.bg/v1.0/removebg",
-        data=form,
+        files={"image_file": open(photo_data, "rb")},
+        data={"size": "auto"},
         headers={"X-Api-Key": rmbg_key},
-    ) as response:
-        if response.status == 200:
-            return BytesIO(await response.read())
-        error_text = await response.text()
-        print("Error:", response.status, error_text)
-        return None
+    )
+    if response.status_code == 200:
+        return BytesIO(response.content)
+    print("Error:", response.status_code, response.text)
+    return None
 
 
 def _check_rmbg(func):
@@ -111,7 +82,7 @@ def _check_rmbg(func):
     return check_rmbg
 
 
-@Client.on_message(filters.command("rmbg", prefix) & filters.me)
+@Client.on_message(filters.command("rbg", prefix) & filters.me)
 @_check_rmbg
 async def rmbg(client: Client, message: Message):
     pablo = await edit_or_reply(message, "<code>Processing...</code>")
@@ -123,41 +94,43 @@ async def rmbg(client: Client, message: Message):
         await pablo.edit("<code>Reply to a valid media first.</code>")
         return
     start = datetime.now()
-    await pablo.edit("sending to ReMove.BG")
+    await pablo.edit("sending to Remove.bg")
     input_file_name = cool
-    form = aiohttp.FormData()
-    with open(input_file_name, "rb") as fh:
-        form.add_field("image_file", fh.read(), filename=input_file_name)
-    async with aiohttp.ClientSession() as session, session.post(
+    files = {
+        "image_file": (input_file_name, open(input_file_name, "rb")),
+    }
+    r = requests.post(
         "https://api.remove.bg/v1.0/removebg",
         headers={"X-Api-Key": rmbg_key},
-        data=form,
-    ) as r:
-        r_content = await r.read()
-        contentType = r.headers.get("content-type")
+        files=files,
+        allow_redirects=True,
+        stream=True,
+    )
     if os.path.exists(cool):
         os.remove(cool)
+    output_file_name = r
+    contentType = output_file_name.headers.get("content-type")
     if "image" in contentType:
-        with io.BytesIO(r_content) as remove_bg_image:
-            remove_bg_image.name = "BG_rem.png"
+        with io.BytesIO(output_file_name.content) as remove_bg_image:
+            remove_bg_image.name = "bg_removed.png"
             await client.send_document(
                 message.chat.id, remove_bg_image, reply_to_message_id=message.id
             )
         end = datetime.now()
         ms = (end - start).seconds
         await pablo.edit(
-            f"<code>Removed image's Background in {ms} seconds, powered by </code> <b>@moonuserbot</b>"
+            f"<code>Removed image's Background in {ms} seconds.</code>"
         )
         if os.path.exists("BG_rem.png"):
             os.remove("BG_rem.png")
     else:
         await pablo.edit(
-            "ReMove.BG API returned Errors. Please report to @moonub_chat"
-            + f"\n`{r_content.decode('UTF-8')}"
+            "Remove.bg API returned Errors."
+            + f"\n`{output_file_name.content.decode('UTF-8')}"
         )
 
 
-@Client.on_message(filters.command("rebg", prefix) & filters.me)
+@Client.on_message(filters.command("rmbg", prefix) & filters.me)
 async def rembg(client: Client, message: Message):
     await message.edit("<code>Processing...</code>")
     chat_id = message.chat.id
@@ -190,6 +163,6 @@ async def rembg(client: Client, message: Message):
 
 
 modules_help["removebg"] = {
-    "rebg [reply to image]*": "remove background from image without transparency",
-    "rmbg [reply to image]*": "remove background from image with transparency",
+    "rmbg [reply to image]*": "reemove background from image without transparency",
+    "rbg [reply to image]*": "remove background from image with transparency",
 }
