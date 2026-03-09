@@ -3,9 +3,8 @@ import os
 import time
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc, progress
-
 
 @Client.on_message(filters.command("upl", prefix) & filters.me)
 async def upl(client: Client, message: Message):
