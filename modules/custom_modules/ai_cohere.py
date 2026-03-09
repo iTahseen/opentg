@@ -1,7 +1,7 @@
 import asyncio
 from utils.scripts import import_library
 from utils.config import cohere_key
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc
 from utils.db import db
 from pyrogram import Client, filters, enums
