@@ -3,7 +3,7 @@ import requests
 from urllib.parse import quote
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 GOOGLE_SEARCH_API = "https://api.delirius.store/search/googlesearch?query="
 APIFLASH_API_URL = "https://api.apiflash.com/v1/urltoimage"
