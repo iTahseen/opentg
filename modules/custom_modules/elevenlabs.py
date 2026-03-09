@@ -3,7 +3,7 @@ import httpx
 import subprocess
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.db import db
 
 DEFAULT_PARAMS = {
