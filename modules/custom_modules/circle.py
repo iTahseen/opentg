@@ -5,7 +5,7 @@ import asyncio
 import time
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 async def run_subprocess(cmd, timeout=None):
     proc = await asyncio.create_subprocess_exec(
