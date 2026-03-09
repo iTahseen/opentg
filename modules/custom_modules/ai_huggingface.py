@@ -9,7 +9,7 @@ from pyrogram import filters, Client, enums
 from pyrogram.types import Message
 from concurrent.futures import ThreadPoolExecutor
 from utils.db import db
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc
 
 logging.basicConfig(level=logging.INFO)
