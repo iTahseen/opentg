@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import ChatForwardsRestricted
 import asyncio
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 DEFAULT_TIME_ZONE_OFFSET = 5
 MORNING_TIME = "08:00 AM"
