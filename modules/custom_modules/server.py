@@ -3,16 +3,11 @@ import os
 import platform
 import sys
 import time
-
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 from pyrogram.enums.chat_type import ChatType
 import requests
-
-# noinspection PyUnresolvedReferences
-from utils.misc import modules_help, prefix
-
-# noinspection PyUnresolvedReferences
+from utils import modules_help, prefix
 from utils.scripts import import_library
 
 
