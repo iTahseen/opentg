@@ -2,8 +2,7 @@ import asyncio
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import Message
-
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 # Define hieroglyphic frames for bird animation
 BIRD_ANIMATION_FRAMES = [
