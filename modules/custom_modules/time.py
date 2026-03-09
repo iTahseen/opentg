@@ -2,9 +2,8 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 import aiohttp
 from datetime import datetime
-from zoneinfo import ZoneInfo  # Python 3.9+ required
-
-from utils.misc import modules_help, prefix
+from zoneinfo import ZoneInfo
+from utils import modules_help, prefix
 
 GEO_API_USERNAME = "tahseen"
 WEATHER_API_KEY = "3ec738bcb912c44a805858054ead1efd"
