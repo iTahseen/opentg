@@ -1,7 +1,7 @@
 import requests
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 def google_translate(query, source_lang="auto", target_lang="en"):
     url = "https://translate.google.com/translate_a/single"
