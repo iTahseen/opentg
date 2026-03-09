@@ -3,7 +3,7 @@ import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from utils.db import db
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 ELEVENLABS_API_URL = "https://bk9.fun/tools/elevenlabs?q={query}&character={character}&output_format=mp3_44100_64"
 AVAILABLE_CHARACTERS = [
