@@ -2,12 +2,10 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 import aiohttp
 from datetime import datetime
+from utils import modules_help, prefix
 
-from utils.misc import modules_help, prefix
-
-# Aladhan API credentials
 ALADHAN_API_URL = "https://api.aladhan.com/v1/timingsByCity"
-DEFAULT_METHOD = 2  # Islamic Society of North America
+DEFAULT_METHOD = 2
 DEFAULT_CITY = "Kahror Pakka"
 DEFAULT_COUNTRY = "PK"
 
