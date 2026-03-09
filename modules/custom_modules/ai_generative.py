@@ -2,7 +2,7 @@ import os
 import asyncio
 from PIL import Image
 from pyrogram import Client, filters, enums
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc
 from utils.config import gemini_key
 import google.generativeai as genai
