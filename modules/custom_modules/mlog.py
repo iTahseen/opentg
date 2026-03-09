@@ -10,9 +10,8 @@ from pyrogram.errors import (
 )
 from pyrogram.types import Message
 from collections import defaultdict
-
 from utils.db import db
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 mlog_enabled = filters.create(lambda _, __, ___: db.get("custom.mlog", "status", False))
 
