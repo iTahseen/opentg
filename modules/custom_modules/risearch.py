@@ -1,11 +1,10 @@
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from modules.url import generate_screenshot
 import os
 
-# API endpoints for reverse image search engines
 SEARCH_ENGINES = {
     "lens": "https://lens.google.com/uploadbyurl?url={image}",
     "reverse": "https://www.google.com/searchbyimage?sbisrc=4chanx&image_url={image}&safe=off",
