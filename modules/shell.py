@@ -1,64 +1,62 @@
-#  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Moon Userbot Organization
-#
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+from subprocess import Popen, PIPE, TimeoutExpired
 import os
-from subprocess import PIPE, Popen, TimeoutExpired
+import shlex
 from time import perf_counter
-
 from pyrogram import Client, filters
-from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
+from pyrogram.errors import MessageTooLong
 
-from utils import modules_help, prefix
-
+from utils.misc import modules_help, prefix
 
 @Client.on_message(filters.command(["shell", "sh"], prefix) & filters.me)
 async def shell(_, message: Message):
     if len(message.command) < 2:
         return await message.edit("<b>Specify the command in message text</b>")
+    
     cmd_text = message.text.split(maxsplit=1)[1]
-    cmd_args = cmd_text.split()
-    cmd_obj = Popen(
-        cmd_args,
-        stdout=PIPE,
-        stderr=PIPE,
-        text=True,
-    )
+    cmd_args = shlex.split(cmd_text)
+    
+    try:
+        cmd_obj = Popen(
+            cmd_args,
+            stdout=PIPE,
+            stderr=PIPE,
+            text=True,
+        )
+    except Exception as e:
+        return await message.edit(f"<b>Error starting command:</b>\n<code>{str(e)}</code>")
 
     char = "#" if os.getuid() == 0 else "$"
     text = f"<b>{char}</b> <code>{cmd_text}</code>\n\n"
 
     await message.edit(text + "<b>Running...</b>")
+    
     try:
         start_time = perf_counter()
         stdout, stderr = cmd_obj.communicate(timeout=60)
-    except TimeoutExpired:
-        text += "<b>Timeout expired (60 seconds)</b>"
-    else:
         stop_time = perf_counter()
+        
+        text = f"<b>{char}</b> <code>{cmd_text}</code>\n\n"
+        
         if stdout:
-            text += f"<b>Output:</b>\n<code>{stdout}</code>\n\n"
+            text += f"<b>Output:</b>\n<pre><code>{stdout}</code></pre>\n\n"
         if stderr:
-            text += f"<b>Error:</b>\n<code>{stderr}</code>\n\n"
+            text += f"<b>Error:</b>\n<pre><code>{stderr}</code></pre>\n\n"
+        
         text += f"<b>Completed in {round(stop_time - start_time, 5)} seconds with code {cmd_obj.returncode}</b>"
-    try:
+    except TimeoutExpired:
+        cmd_obj.kill()
+        text += "<b>Timeout expired (60 seconds)</b>"
+    
+    if len(text) > 4096:
+        for i in range(0, len(text), 4096):
+            await message.reply(text[i:i + 4096])
+        await message.delete()
+    else:
         await message.edit(text)
-    except MessageTooLong:
-        await message.edit(text[:-100])
+    
     cmd_obj.kill()
 
-
-modules_help["shell"] = {"sh [command]*": "Execute command in shell"}
+modules_help["shell"] = {
+    "sh [command]*": "Execute command in shell. Example: `sh ls -la`"
+}
