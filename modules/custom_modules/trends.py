@@ -2,8 +2,7 @@ from pyrogram import Client, filters
 from bs4 import BeautifulSoup
 import aiohttp
 import random
-
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 def get_ua():
     user_agents = [
