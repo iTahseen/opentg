@@ -12,6 +12,8 @@ dulwich==1.1.0
 aiohttp
 aiofiles
 
+requests
+pySmartDL
 ffmpeg-python
 gemini-webapi
 google-generativeai
