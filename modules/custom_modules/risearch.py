@@ -2,7 +2,7 @@ from utils import modules_help, prefix
 import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from modules.url import generate_screenshot
+from modules.custom_modules.url import generate_screenshot
 import os
 
 SEARCH_ENGINES = {
