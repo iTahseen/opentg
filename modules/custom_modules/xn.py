@@ -2,7 +2,7 @@ import requests
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 from io import BytesIO
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 BASE_URL = "https://api.delirius.store"
 SEARCH_ENDPOINT = "/search/xnxxsearch?query="
