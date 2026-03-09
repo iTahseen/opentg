@@ -5,8 +5,7 @@ from time import perf_counter
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import MessageTooLong
-
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 @Client.on_message(filters.command(["shell", "sh"], prefix) & filters.me)
 async def shell(_, message: Message):
