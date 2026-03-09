@@ -59,7 +59,7 @@ class HelpNavigator:
         start_index = (self.current_page - 1) * 10
         end_index = start_index + 10
         page_modules = self.module_list[start_index:end_index]
-        text = "<b>Help for <a href=https://t.me/Moonub_chat>Moon-Userbot</a></b>\n"
+        text = "<b>Help for <a href=https://t.me/xwvux>opentg</a></b>\n"
         text += f"For more help on how to use a command, type <code>{prefix}help [module]</code>\n\n"
         text += f"Help Page No: {self.current_page}/{self.total_pages}\n\n"
         for module_name in page_modules:
