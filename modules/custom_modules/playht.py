@@ -3,21 +3,18 @@ import httpx
 from asyncio import sleep
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.db import db
 
-# Default Play.ht configuration
 DEFAULT_PARAMS = {
     "voice": "s3://voice-cloning-zero-shot/ec7103a2-a80c-46a1-b8dd-fca1179e2b5d/original/manifest.json",
     "speed": 1.0,
 }
 
-# Estimate audio duration
 def estimate_audio_duration(text: str) -> float:
     words_per_minute = 150
     return len(text.split()) / words_per_minute * 60
 
-# Generate audio using Play.ht API
 async def generate_conversational_audio(text: str):
     user_id = db.get("custom.playht", "user_id")
     api_key = db.get("custom.playht", "api_key")
