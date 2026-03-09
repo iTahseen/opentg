@@ -3,7 +3,7 @@ from pyrogram.types import Message
 import requests
 import logging
 import os
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 logging.basicConfig(level=logging.DEBUG)
 
