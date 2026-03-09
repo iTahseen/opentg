@@ -2,7 +2,7 @@ import aiohttp
 from io import BytesIO
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc
 
 MERRIAM_WEBSTER_API_KEY = "2b7f5901-40e0-4007-9c06-4d38218a62ab"
